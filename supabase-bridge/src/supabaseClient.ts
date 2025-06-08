@@ -8,9 +8,12 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY in environment variables.");
 }
 
-// Use service role key if available, otherwise anon key
-const supabaseKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+// Default client (for authentication and user operations)
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const supabase = createClient(SUPABASE_URL, supabaseKey);
+// Admin client (for admin operations that bypass RLS)
+const supabaseAdmin = SUPABASE_SERVICE_ROLE_KEY 
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+  : supabase;
 
-module.exports = supabase;
+module.exports = { supabase, supabaseAdmin };

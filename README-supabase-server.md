@@ -136,34 +136,124 @@ curl -X PUT http://localhost:8000/users/profile \
 
 ## Workshops
 
-### Get All Active Workshops
+**Note: Workshop management endpoints require admin authentication. Public endpoints are available for viewing active workshops.**
+
+### Get All Active Workshops (Public)
 
 ```sh
 curl http://localhost:8000/workshops
 ```
 
-### Get Workshop by Slug
+### Get Workshop by Slug (Public)
 
 ```sh
 curl http://localhost:8000/workshops/<WORKSHOP_SLUG>
 ```
 
-### Get Sessions for a Workshop
+### Get Sessions for a Workshop (Public)
 
 ```sh
 curl http://localhost:8000/workshops/sessions/workshop/<WORKSHOP_ID>
 ```
 
-### Get Session by ID
+### Get Session by ID (Public)
 
 ```sh
 curl http://localhost:8000/workshops/sessions/<SESSION_ID>
 ```
 
-### Get Upcoming Sessions
+### Get Upcoming Sessions (Public)
 
 ```sh
 curl "http://localhost:8000/workshops/sessions/upcoming?limit=3"
+```
+
+### Get All Workshops Including Inactive (Admin Only)
+
+```sh
+curl http://localhost:8000/workshops/admin/all \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
+```
+
+### Create New Workshop (Admin Only)
+
+```sh
+curl -X POST http://localhost:8000/workshops \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "slug": "new-workshop",
+    "name": "New Workshop",
+    "short_description": "Brief description",
+    "full_description": "<p>Full HTML description</p>",
+    "image_url": "/images/workshop.png",
+    "gallery_images": ["/images/gallery1.jpg", "/images/gallery2.jpg"],
+    "video_url": "/videos/workshop.mp4",
+    "topics": [{"id": "topic1", "title": "Topic 1", "description": "Description", "icon": "icon"}],
+    "is_exclusive": false,
+    "includes": ["Item 1", "Item 2"],
+    "cta_text": "Register Now",
+    "metadata": {"keywords": ["tag1", "tag2"]},
+    "active": true
+  }'
+```
+
+### Update Workshop (Admin Only)
+
+```sh
+curl -X PUT http://localhost:8000/workshops/<WORKSHOP_ID> \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Updated Workshop Name", "active": false}'
+```
+
+### Delete Workshop (Admin Only)
+
+```sh
+curl -X DELETE http://localhost:8000/workshops/<WORKSHOP_ID> \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
+```
+
+### Get All Workshop Sessions Including Inactive (Admin Only)
+
+```sh
+curl http://localhost:8000/workshops/sessions/admin/all \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
+```
+
+### Create New Workshop Session (Admin Only)
+
+```sh
+curl -X POST http://localhost:8000/workshops/sessions \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workshop_id": "<WORKSHOP_ID>",
+    "date": "2025-06-15T18:00:00-06:00",
+    "location": "Workshop Location",
+    "capacity": 20,
+    "available_spots": 20,
+    "price": 150.00,
+    "is_online": false,
+    "vimeo_link": null,
+    "active": true
+  }'
+```
+
+### Update Workshop Session (Admin Only)
+
+```sh
+curl -X PUT http://localhost:8000/workshops/sessions/<SESSION_ID> \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"capacity": 25, "available_spots": 25, "price": 175.00}'
+```
+
+### Delete Workshop Session (Admin Only)
+
+```sh
+curl -X DELETE http://localhost:8000/workshops/sessions/<SESSION_ID> \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
 ```
 
 ---
@@ -200,7 +290,9 @@ curl -X POST http://localhost:8000/testimonials \
 
 ## Orders
 
-### Create Order
+**Note: Order management endpoints require admin authentication. Basic order operations are available for users.**
+
+### Create Order (Public)
 
 ```sh
 curl -X POST http://localhost:8000/orders \
@@ -208,7 +300,7 @@ curl -X POST http://localhost:8000/orders \
   -d '{"user_id":"<USER_ID>","workshop_id":"<WORKSHOP_ID>","session_id":"<SESSION_ID>","payment_method":"paypal","payment_id":"payment-123","amount":100.0}'
 ```
 
-### Update Order Status
+### Update Order Status (Public)
 
 ```sh
 curl -X PUT http://localhost:8000/orders/<ORDER_ID> \
@@ -216,22 +308,87 @@ curl -X PUT http://localhost:8000/orders/<ORDER_ID> \
   -d '{"status":"completed","payment_id":"payment-123"}'
 ```
 
-### Get User Orders
+### Get User Orders (Public)
 
 ```sh
 curl http://localhost:8000/orders/user/<USER_ID>
 ```
 
-### Get Order by ID
+### Get Order by ID (Public)
 
 ```sh
 curl http://localhost:8000/orders/<ORDER_ID>
 ```
 
-### Cancel Order
+### Cancel Order (Public)
 
 ```sh
 curl -X PUT http://localhost:8000/orders/<ORDER_ID>/cancel
+```
+
+### Get All Orders with Filters (Admin Only)
+
+```sh
+curl "http://localhost:8000/orders/admin/all?status=completed&limit=20&offset=0" \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
+```
+
+### Get Order Statistics (Admin Only)
+
+```sh
+curl http://localhost:8000/orders/admin/stats \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
+```
+
+### Create Order as Admin (Admin Only)
+
+```sh
+curl -X POST http://localhost:8000/orders/admin \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "<USER_ID>",
+    "workshop_id": "<WORKSHOP_ID>",
+    "session_id": "<SESSION_ID>",
+    "payment_method": "manual",
+    "payment_id": "admin-manual-001",
+    "amount": 150.00,
+    "status": "completed",
+    "notes": "Admin created order"
+  }'
+```
+
+### Update Order (Admin Only)
+
+```sh
+curl -X PUT http://localhost:8000/orders/admin/<ORDER_ID> \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"refunded","amount":150.00,"admin_notes":"Refund processed"}'
+```
+
+### Update Order Status with Admin Notes (Admin Only)
+
+```sh
+curl -X PUT http://localhost:8000/orders/admin/<ORDER_ID>/status \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"completed","admin_notes":"Payment verified manually","payment_id":"manual-123"}'
+```
+
+### Delete Order (Admin Only)
+
+```sh
+curl -X DELETE http://localhost:8000/orders/admin/<ORDER_ID> \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
+```
+
+### Export Orders as CSV (Admin Only)
+
+```sh
+curl "http://localhost:8000/orders/admin/export?status=completed&start_date=2025-01-01&end_date=2025-12-31" \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -o orders-export.csv
 ```
 
 ---

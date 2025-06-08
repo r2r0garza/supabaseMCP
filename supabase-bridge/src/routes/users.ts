@@ -1,6 +1,6 @@
 // CommonJS version
 const express = require("express");
-const supabase = require("../supabaseClient");
+const { supabase } = require("../supabaseClient");
 const router = express.Router();
 
 // Helper function to sync pending user data
