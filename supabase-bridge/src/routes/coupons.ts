@@ -1,10 +1,11 @@
 // CommonJS version
 const express = require("express");
 const supabase = require("../supabaseClient");
+const { requireAdminAuth } = require("../middleware/auth");
 const router = express.Router();
 
 // GET /coupons - Get all coupons (admin view)
-router.get("/", async (req, res) => {
+router.get("/", requireAdminAuth, async (req, res) => {
   const { active_only, expired_only } = req.query;
   
   let query = supabase.from("coupons").select("*");
@@ -29,7 +30,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET /coupons/:id - Get coupon by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
   
   const { data, error } = await supabase
@@ -77,7 +78,7 @@ router.get("/by-code/:code", async (req, res) => {
 });
 
 // POST /coupons - Create new coupon
-router.post("/", async (req, res) => {
+router.post("/", requireAdminAuth, async (req, res) => {
   const { 
     name, 
     code, 
@@ -134,7 +135,7 @@ router.post("/", async (req, res) => {
 });
 
 // PUT /coupons/:id - Update coupon
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
   const updates = { ...req.body };
   
@@ -170,7 +171,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE /coupons/:id - Delete coupon
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
   
   const { error } = await supabase
@@ -186,7 +187,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // POST /coupons/:id/increment-usage - Increment usage count (called when coupon is used)
-router.post("/:id/increment-usage", async (req, res) => {
+router.post("/:id/increment-usage", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
   
   const { data, error } = await supabase
