@@ -270,6 +270,92 @@ curl "http://localhost:8000/events/upcoming?limit=5"
 
 ---
 
+## Coupons
+
+### Get All Coupons (Admin)
+
+```sh
+curl http://localhost:8000/coupons
+```
+
+### Get All Active Coupons Only
+
+```sh
+curl "http://localhost:8000/coupons?active_only=true"
+```
+
+### Get All Expired Coupons Only
+
+```sh
+curl "http://localhost:8000/coupons?expired_only=true"
+```
+
+### Get Coupon by ID
+
+```sh
+curl http://localhost:8000/coupons/<COUPON_ID>
+```
+
+### Validate Coupon by Code
+
+```sh
+curl "http://localhost:8000/coupons/by-code/WELCOME15?order_amount=200&user_id=<USER_ID>"
+```
+
+### Create New Coupon
+
+```sh
+curl -X POST http://localhost:8000/coupons \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Holiday Sale","code":"HOLIDAY20","discount_type":"percentage","discount_value":20,"min_order_amount":100,"usage_limit":500,"end_date":"2024-12-31T23:59:59Z"}'
+```
+
+### Create Fixed Amount Coupon
+
+```sh
+curl -X POST http://localhost:8000/coupons \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Welcome Bonus","code":"WELCOME50","discount_type":"fixed_amount","discount_value":50,"min_order_amount":200,"usage_limit":100}'
+```
+
+### Create Percentage Coupon with Max Discount
+
+```sh
+curl -X POST http://localhost:8000/coupons \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Student Discount","code":"STUDENT25","discount_type":"percentage","discount_value":25,"max_discount_amount":100,"min_order_amount":50}'
+```
+
+### Update Coupon
+
+```sh
+curl -X PUT http://localhost:8000/coupons/<COUPON_ID> \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Updated Name","is_active":false,"usage_limit":200}'
+```
+
+### Deactivate Coupon
+
+```sh
+curl -X PUT http://localhost:8000/coupons/<COUPON_ID> \
+  -H "Content-Type: application/json" \
+  -d '{"is_active":false}'
+```
+
+### Increment Coupon Usage (When Applied to Order)
+
+```sh
+curl -X POST http://localhost:8000/coupons/<COUPON_ID>/increment-usage
+```
+
+### Delete Coupon
+
+```sh
+curl -X DELETE http://localhost:8000/coupons/<COUPON_ID>
+```
+
+---
+
 ## Workshop Session Spots
 
 ### Decrease Available Spots
@@ -288,7 +374,7 @@ curl -X POST http://localhost:8000/workshop-sessions/<SESSION_ID>/increase-spots
 
 ## Notes
 
-- Replace `<ACCESS_TOKEN>`, `<USER_ID>`, `<WORKSHOP_ID>`, `<SESSION_ID>`, `<ORDER_ID>`, and `<WORKSHOP_SLUG>` with real values.
+- Replace `<ACCESS_TOKEN>`, `<USER_ID>`, `<WORKSHOP_ID>`, `<SESSION_ID>`, `<ORDER_ID>`, `<COUPON_ID>`, and `<WORKSHOP_SLUG>` with real values.
 - All endpoints return JSON.
 - For protected endpoints, pass the access token in the `Authorization: Bearer ...` header.
 - For POST/PUT requests, use `-H "Content-Type: application/json"` and provide a JSON body with `-d`.

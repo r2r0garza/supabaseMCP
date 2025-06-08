@@ -21,6 +21,7 @@ const ordersRouter = require("./routes/orders");
 const pendingUsersRouter = require("./routes/pendingUsers");
 const eventsRouter = require("./routes/events");
 const sessionSpotsRouter = require("./routes/sessionSpots");
+const couponsRouter = require("./routes/coupons");
 // ... (other routers)
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
@@ -29,6 +30,7 @@ app.use("/testimonials", testimonialsRouter);
 app.use("/orders", ordersRouter);
 app.use("/pending-users", pendingUsersRouter);
 app.use("/events", eventsRouter);
+app.use("/coupons", couponsRouter);
 app.use("/", sessionSpotsRouter);
 
 app.get("/health", (_req, res) => {
