@@ -132,6 +132,52 @@ curl -X PUT http://localhost:8000/users/profile \
   -d '{"id":"<USER_ID>","full_name":"Updated Name","phone":"0987654321"}'
 ```
 
+### Admin: List All Users
+
+```sh
+curl http://localhost:8000/users/admin/all \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### Admin: Get User by ID
+
+```sh
+curl http://localhost:8000/users/admin/<USER_ID> \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### Admin: Create User
+
+Note: Requires an existing Supabase Auth user (foreign key to `auth.users`). The server resolves the Auth user ID automatically from the provided `email`.
+
+```sh
+curl -X POST http://localhost:8000/users/admin \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "created.by.admin@example.com",
+    "full_name": "Admin Created User",
+    "phone": "5551234567",
+    "role": "cliente"
+  }'
+```
+
+### Admin: Update User
+
+```sh
+curl -X PUT http://localhost:8000/users/admin/<USER_ID> \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"full_name":"Updated Name","role":"admin"}'
+```
+
+### Admin: Delete User
+
+```sh
+curl -X DELETE http://localhost:8000/users/admin/<USER_ID> \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
 ---
 
 ## Workshops
