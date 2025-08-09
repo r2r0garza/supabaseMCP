@@ -1,6 +1,6 @@
 // CommonJS version
 const express = require("express");
-const supabase = require("../supabaseClient");
+const { supabase, supabaseAdmin } = require("../supabaseClient");
 const { requireAdminAuth } = require("../middleware/auth");
 const router = express.Router();
 
@@ -47,20 +47,6 @@ router.get("/sessions/workshop/:workshop_id", async (req, res) => {
   return res.json({ success: true, data });
 });
 
-// GET /workshop-sessions/:session_id - session by ID, with workshop
-router.get("/sessions/:session_id", async (req, res) => {
-  const { session_id } = req.params;
-  const { data, error } = await supabase
-    .from("workshop_sessions")
-    .select("*, workshops(*)")
-    .eq("id", session_id)
-    .single();
-  if (error) {
-    return res.status(404).json({ success: false, error: error.message });
-  }
-  return res.json({ success: true, data });
-});
-
 // GET /workshop-sessions/upcoming?limit=3 - upcoming sessions
 router.get("/sessions/upcoming", async (req, res) => {
   const limit = parseInt(req.query.limit) || 3;
@@ -74,6 +60,20 @@ router.get("/sessions/upcoming", async (req, res) => {
     .limit(limit);
   if (error) {
     return res.status(500).json({ success: false, error: error.message });
+  }
+  return res.json({ success: true, data });
+});
+
+// GET /workshop-sessions/:session_id - session by ID, with workshop
+router.get("/sessions/:session_id", async (req, res) => {
+  const { session_id } = req.params;
+  const { data, error } = await supabase
+    .from("workshop_sessions")
+    .select("*, workshops(*)")
+    .eq("id", session_id)
+    .single();
+  if (error) {
+    return res.status(404).json({ success: false, error: error.message });
   }
   return res.json({ success: true, data });
 });
@@ -107,7 +107,7 @@ router.post("/", requireAdminAuth, async (req, res) => {
     });
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("workshops")
     .insert([{
       slug,
@@ -145,7 +145,7 @@ router.put("/:id", requireAdminAuth, async (req, res) => {
   delete updates.created_at;
   delete updates.updated_at;
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("workshops")
     .update(updates)
     .eq("id", id)
@@ -163,7 +163,7 @@ router.put("/:id", requireAdminAuth, async (req, res) => {
 router.delete("/:id", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("workshops")
     .delete()
     .eq("id", id);
@@ -177,7 +177,7 @@ router.delete("/:id", requireAdminAuth, async (req, res) => {
 
 // GET /workshops/admin/all - Get all workshops including inactive (Admin only)
 router.get("/admin/all", requireAdminAuth, async (req, res) => {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("workshops")
     .select("*")
     .order("created_at", { ascending: false });
@@ -213,7 +213,7 @@ router.post("/sessions", requireAdminAuth, async (req, res) => {
     });
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("workshop_sessions")
     .insert([{
       workshop_id,
@@ -251,7 +251,7 @@ router.put("/sessions/:id", requireAdminAuth, async (req, res) => {
   if (updates.available_spots) updates.available_spots = parseInt(updates.available_spots);
   if (updates.price) updates.price = parseFloat(updates.price);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("workshop_sessions")
     .update(updates)
     .eq("id", id)
@@ -269,7 +269,7 @@ router.put("/sessions/:id", requireAdminAuth, async (req, res) => {
 router.delete("/sessions/:id", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("workshop_sessions")
     .delete()
     .eq("id", id);
@@ -283,7 +283,7 @@ router.delete("/sessions/:id", requireAdminAuth, async (req, res) => {
 
 // GET /workshops/sessions/admin/all - Get all workshop sessions including inactive (Admin only)
 router.get("/sessions/admin/all", requireAdminAuth, async (req, res) => {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("workshop_sessions")
     .select("*, workshops(*)")
     .order("date", { ascending: false });

@@ -1,6 +1,6 @@
 // CommonJS version
 const express = require("express");
-const supabase = require("../supabaseClient");
+const { supabase, supabaseAdmin } = require("../supabaseClient");
 const router = express.Router();
 
 // POST /workshop-sessions/:session_id/decrease-spots

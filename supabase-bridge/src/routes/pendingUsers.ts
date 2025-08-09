@@ -1,6 +1,6 @@
 // CommonJS version
 const express = require("express");
-const supabase = require("../supabaseClient");
+const { supabase, supabaseAdmin } = require("../supabaseClient");
 const router = express.Router();
 
 // POST /pending-users - save a pending user

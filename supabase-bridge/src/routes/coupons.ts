@@ -1,6 +1,6 @@
 // CommonJS version
 const express = require("express");
-const supabase = require("../supabaseClient");
+const { supabase, supabaseAdmin } = require("../supabaseClient");
 const { requireAdminAuth } = require("../middleware/auth");
 const router = express.Router();
 
@@ -33,7 +33,7 @@ router.get("/", requireAdminAuth, async (req, res) => {
 router.get("/:id", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
   
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("coupons")
     .select("*")
     .eq("id", id)
@@ -109,7 +109,7 @@ router.post("/", requireAdminAuth, async (req, res) => {
     });
   }
   
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("coupons")
     .insert([{
       name,
@@ -156,7 +156,7 @@ router.put("/:id", requireAdminAuth, async (req, res) => {
   if (updates.usage_limit) updates.usage_limit = parseInt(updates.usage_limit);
   if (updates.usage_limit_per_user) updates.usage_limit_per_user = parseInt(updates.usage_limit_per_user);
   
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("coupons")
     .update(updates)
     .eq("id", id)

@@ -526,6 +526,70 @@ curl -X DELETE http://localhost:8000/coupons/<COUPON_ID> \
 
 ---
 
+## Testimonials
+
+### Get Approved Testimonials (Public)
+
+```sh
+curl http://localhost:8000/testimonials/approved
+```
+
+### Get Featured Testimonials (Public)
+
+```sh
+curl "http://localhost:8000/testimonials/featured?limit=3"
+```
+
+### Get Testimonials by Workshop (Public)
+
+```sh
+curl http://localhost:8000/testimonials/workshop/<WORKSHOP_ID>
+```
+
+### Create New Testimonial (Public)
+
+```sh
+curl -X POST http://localhost:8000/testimonials \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "name": "John Doe",
+    "phone": "+1234567890",
+    "workshopId": "<WORKSHOP_ID>",
+    "content": "This workshop was amazing! I learned so much.",
+    "position": "Software Engineer",
+    "company": "Tech Corp",
+    "rating": 5
+  }'
+```
+
+### Get All Testimonials (Admin Only)
+
+```sh
+curl http://localhost:8000/testimonials/admin/all \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>"
+```
+
+### Approve/Unapprove Testimonial (Admin Only)
+
+```sh
+curl -X PUT http://localhost:8000/testimonials/admin/<TESTIMONIAL_ID>/approve \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"is_approved": true}'
+```
+
+### Feature/Unfeature Testimonial (Admin Only)
+
+```sh
+curl -X PUT http://localhost:8000/testimonials/admin/<TESTIMONIAL_ID>/feature \
+  -H "Authorization: Bearer <ADMIN_ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"is_featured": true}'
+```
+
+---
+
 ## Workshop Session Spots
 
 ### Decrease Available Spots
@@ -544,7 +608,7 @@ curl -X POST http://localhost:8000/workshop-sessions/<SESSION_ID>/increase-spots
 
 ## Notes
 
-- Replace `<ACCESS_TOKEN>`, `<USER_ID>`, `<WORKSHOP_ID>`, `<SESSION_ID>`, `<ORDER_ID>`, `<COUPON_ID>`, and `<WORKSHOP_SLUG>` with real values.
+- Replace `<ACCESS_TOKEN>`, `<USER_ID>`, `<WORKSHOP_ID>`, `<SESSION_ID>`, `<ORDER_ID>`, `<COUPON_ID>`, `<TESTIMONIAL_ID>`, and `<WORKSHOP_SLUG>` with real values.
 - All endpoints return JSON.
 - For protected endpoints, pass the access token in the `Authorization: Bearer ...` header.
 - For POST/PUT requests, use `-H "Content-Type: application/json"` and provide a JSON body with `-d`.
