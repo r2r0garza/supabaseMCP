@@ -244,6 +244,78 @@ curl -X POST http://localhost:8000/testimonials \
 
 ---
 
+## Coupons
+
+### Public: Get and Validate Coupon by Code
+
+```sh
+curl "http://localhost:8000/coupons/by-code/<COUPON_CODE>?order_amount=150&user_id=<USER_ID>"
+```
+
+### Admin: List Coupons
+
+```sh
+curl "http://localhost:8000/coupons?active_only=true" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+You can also filter with `expired_only=true`.
+
+### Admin: Get Coupon by ID
+
+```sh
+curl http://localhost:8000/coupons/<COUPON_ID> \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### Admin: Create Coupon
+
+```sh
+curl -X POST http://localhost:8000/coupons \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Summer Sale 10%",
+    "code": "SUMMER10",
+    "discount_type": "percentage",
+    "discount_value": 10,
+    "max_discount_amount": 50,
+    "min_order_amount": 100,
+    "usage_limit": 1000,
+    "usage_limit_per_user": 2,
+    "start_date": "2025-06-01T00:00:00.000Z",
+    "end_date": "2025-08-31T23:59:59.000Z",
+    "is_active": true
+  }'
+```
+
+Allowed `discount_type` values: `percentage` or `fixed_amount`.
+
+### Admin: Update Coupon
+
+```sh
+curl -X PUT http://localhost:8000/coupons/<COUPON_ID> \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"is_active": false}'
+```
+
+### Admin: Delete Coupon
+
+```sh
+curl -X DELETE http://localhost:8000/coupons/<COUPON_ID> \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### Admin: Increment Coupon Usage
+
+```sh
+curl -X POST http://localhost:8000/coupons/<COUPON_ID>/increment-usage \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+---
+
 ## Orders
 
 ### Create Order
@@ -334,7 +406,7 @@ curl -X POST http://localhost:8000/workshop-sessions/<SESSION_ID>/increase-spots
 
 ## Notes
 
-- Replace `<ACCESS_TOKEN>`, `<USER_ID>`, `<WORKSHOP_ID>`, `<SESSION_ID>`, `<ORDER_ID>`, and `<WORKSHOP_SLUG>` with real values.
+- Replace `<ACCESS_TOKEN>`, `<USER_ID>`, `<WORKSHOP_ID>`, `<SESSION_ID>`, `<ORDER_ID>`, `<WORKSHOP_SLUG>`, `<COUPON_ID>`, and `<COUPON_CODE>` with real values.
 - All endpoints return JSON.
 - For protected endpoints, pass the access token in the `Authorization: Bearer ...` header.
 - For POST/PUT requests, use `-H "Content-Type: application/json"` and provide a JSON body with `-d`.
