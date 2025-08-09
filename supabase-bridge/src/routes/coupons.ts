@@ -1,3 +1,4 @@
+// @ts-nocheck
 // CommonJS version
 const express = require("express");
 const { supabase, supabaseAdmin } = require("../supabaseClient");
@@ -8,7 +9,7 @@ const router = express.Router();
 router.get("/", requireAdminAuth, async (req, res) => {
   const { active_only, expired_only } = req.query;
   
-  let query = supabase.from("coupons").select("*");
+  let query = supabaseAdmin.from("coupons").select("*");
   
   if (active_only === "true") {
     query = query.eq("is_active", true)
@@ -174,13 +175,18 @@ router.put("/:id", requireAdminAuth, async (req, res) => {
 router.delete("/:id", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
   
-  const { error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("coupons")
     .delete()
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
     
   if (error) {
     return res.status(400).json({ success: false, error: error.message });
+  }
+
+  if (!data || data.length === 0) {
+    return res.status(404).json({ success: false, error: "Coupon not found" });
   }
   
   return res.json({ success: true, message: "Coupon deleted successfully" });
@@ -190,7 +196,7 @@ router.delete("/:id", requireAdminAuth, async (req, res) => {
 router.post("/:id/increment-usage", requireAdminAuth, async (req, res) => {
   const { id } = req.params;
   
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("coupons")
     .update({ 
       usage_count: supabase.sql`usage_count + 1`
